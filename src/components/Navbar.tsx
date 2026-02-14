@@ -1,8 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { GraduationCap, Menu, X, LogOut } from "lucide-react";
+import { GraduationCap, Menu, X, LogOut, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface NavbarProps {
   isLoggedIn?: boolean;
@@ -14,6 +15,7 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     navigate("/");
@@ -34,7 +36,14 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
         </Link>
 
         {/* Desktop */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-secondary transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <Moon className="h-5 w-5 text-muted-foreground" /> : <Sun className="h-5 w-5 text-muted-foreground" />}
+          </button>
           {!isLoggedIn ? (
             <>
               <Link to="/login/student" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -70,6 +79,10 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
           className="md:hidden glass border-t border-border"
         >
           <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
+            <button onClick={toggleTheme} className="flex items-center gap-2 text-sm py-2">
+              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              {theme === "light" ? "Dark Mode" : "Light Mode"}
+            </button>
             {!isLoggedIn ? (
               <>
                 <Link to="/login/student" className="text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>

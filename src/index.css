@@ -120,6 +120,11 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .dark .glass-card {
+    background: hsla(222, 47%, 11%, 0.7);
+    border: 1px solid hsla(217, 33%, 25%, 0.5);
+  }
+
   .glass-card:hover {
     box-shadow: var(--shadow-card-hover);
     transform: translateY(-4px);
