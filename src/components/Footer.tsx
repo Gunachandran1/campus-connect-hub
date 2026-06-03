@@ -32,11 +32,6 @@ const Footer = () => (
           </div>
         </div>
       </div>
-      <div className="border-t border-border mt-8 pt-6 text-center text-sm text-muted-foreground">
-        <p className="flex items-center justify-center gap-1">
-          Made with <Heart className="h-3.5 w-3.5 text-destructive fill-destructive" /> by CampusConnect © 2026
-        </p>
-      </div>
     </div>
   </footer>
 );
