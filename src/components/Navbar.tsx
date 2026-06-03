@@ -4,6 +4,7 @@ import { GraduationCap, Menu, X, LogOut, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
+import { useAuth } from "@/components/AuthProvider";
 
 interface NavbarProps {
   isLoggedIn?: boolean;
@@ -16,8 +17,13 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { user, displayName, signOut } = useAuth();
 
-  const handleLogout = () => {
+  const effectiveLoggedIn = isLoggedIn || !!user;
+  const effectiveName = displayName || userName || "";
+
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
@@ -44,9 +50,9 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
           >
             {theme === "light" ? <Moon className="h-5 w-5 text-muted-foreground" /> : <Sun className="h-5 w-5 text-muted-foreground" />}
           </button>
-          {!isLoggedIn ? (
+          {!effectiveLoggedIn ? (
             <>
-              <Link to="/login/student" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/login/student" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
                 Student Login
               </Link>
               <Link to="/login/college">
@@ -55,8 +61,8 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
             </>
           ) : (
             <>
-              <span className="text-sm text-muted-foreground">
-                Welcome, <span className="font-semibold text-foreground">{userName}</span>
+              <span className="text-sm text-muted-foreground hidden sm:inline">
+                Welcome, <span className="font-semibold text-foreground">{effectiveName}</span>!
               </span>
               <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                 <LogOut className="h-4 w-4" /> Logout
@@ -83,7 +89,7 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               {theme === "light" ? "Dark Mode" : "Light Mode"}
             </button>
-            {!isLoggedIn ? (
+            {!effectiveLoggedIn ? (
               <>
                 <Link to="/login/student" className="text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
                   Student Login
@@ -93,9 +99,14 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
                 </Link>
               </>
             ) : (
-              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
-                <LogOut className="h-4 w-4" /> Logout
-              </Button>
+              <>
+                <span className="text-sm text-muted-foreground py-2">
+                  Welcome, <span className="font-semibold text-foreground">{effectiveName}</span>!
+                </span>
+                <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
+                  <LogOut className="h-4 w-4" /> Logout
+                </Button>
+              </>
             )}
           </div>
         </motion.div>
