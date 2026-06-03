@@ -9,6 +9,7 @@ import CollegeCard from "@/components/CollegeCard";
 import SearchFilter from "@/components/SearchFilter";
 import { mockEvents, mockColleges } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/AuthProvider";
 
 const filterMap: Record<string, string> = {
   'All': '',
@@ -23,6 +24,8 @@ const StudentDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
   const { toast } = useToast();
+  const { displayName } = useAuth();
+  const name = displayName || "Student";
 
   const filteredEvents = mockEvents.filter(e => {
     const matchesSearch =
@@ -43,7 +46,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar isLoggedIn userName="Rahul" userRole="student" />
+      <Navbar isLoggedIn userName={name} userRole="student" />
 
       {/* Hero */}
       <section className="relative pt-28 pb-16 overflow-hidden">
@@ -55,7 +58,7 @@ const StudentDashboard = () => {
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-              <Sparkles className="h-4 w-4" /> Welcome back, Rahul!
+              <Sparkles className="h-4 w-4" /> Welcome back, {name}!
             </div>
             <h1 className="font-display text-3xl md:text-5xl font-bold mb-3 leading-tight">
               Discover Opportunities
