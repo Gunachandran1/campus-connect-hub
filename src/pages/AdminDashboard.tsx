@@ -12,9 +12,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mockEvents, eventTypeLabels, eventTypeColors } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/AuthProvider";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
+  const { displayName } = useAuth();
+  const name = displayName || "College Admin";
   const [events, setEvents] = useState(mockEvents.filter(e => e.college === 'Anna University'));
 
   const handleDelete = (id: string) => {
@@ -35,7 +38,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar isLoggedIn userName="Anna University" userRole="college" />
+      <Navbar isLoggedIn userName={name} userRole="college" />
 
       <section className="relative pt-28 pb-10 overflow-hidden">
         <div className="absolute inset-0 -z-10">
