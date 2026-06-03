@@ -61,8 +61,8 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
             </>
           ) : (
             <>
-              <span className="text-sm text-muted-foreground hidden sm:inline">
-                Welcome, <span className="font-semibold text-foreground">{effectiveName}</span>!
+              <span className="text-sm text-foreground hidden sm:inline">
+                Welcome, <span className="font-semibold gradient-text">{effectiveName}</span>!
               </span>
               <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                 <LogOut className="h-4 w-4" /> Logout
@@ -100,8 +100,8 @@ const Navbar = ({ isLoggedIn = false, userRole, userName }: NavbarProps) => {
               </>
             ) : (
               <>
-                <span className="text-sm text-muted-foreground py-2">
-                  Welcome, <span className="font-semibold text-foreground">{effectiveName}</span>!
+                <span className="text-sm text-foreground py-2">
+                  Welcome, <span className="font-semibold gradient-text">{effectiveName}</span>!
                 </span>
                 <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                   <LogOut className="h-4 w-4" /> Logout
