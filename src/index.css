@@ -84,6 +84,8 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --glass-bg: 222 47% 9% / 0.75;
+    --glass-border: 217 33% 25% / 0.5;
   }
 }
 
