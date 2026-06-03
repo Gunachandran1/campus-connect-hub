@@ -1,4 +1,4 @@
-import { GraduationCap, Heart } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => (
