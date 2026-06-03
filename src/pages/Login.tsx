@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 
 const Login = () => {
   const { role } = useParams<{ role: 'student' | 'college' }>();
@@ -14,11 +16,57 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isRegister, setIsRegister] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: isRegister ? "Account Created!" : "Logged In!", description: `Welcome to CampusConnect` });
-    navigate(isStudent ? '/dashboard' : '/admin');
+    setLoading(true);
+    try {
+      if (isRegister) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}${isStudent ? '/dashboard' : '/admin'}`,
+            data: { full_name: fullName, role: isStudent ? 'student' : 'college' },
+          },
+        });
+        if (error) throw error;
+        toast({ title: "Account Created!", description: "Welcome to CampusConnect" });
+        navigate(isStudent ? '/dashboard' : '/admin');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast({ title: "Logged In!", description: "Welcome back to CampusConnect" });
+        navigate(isStudent ? '/dashboard' : '/admin');
+      }
+    } catch (err: any) {
+      toast({ title: "Authentication Error", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}${isStudent ? '/dashboard' : '/admin'}`,
+      });
+      if (result.error) {
+        toast({ title: "Google Sign-in Failed", description: String(result.error?.message || result.error), variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      if (result.redirected) return;
+      navigate(isStudent ? '/dashboard' : '/admin');
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,7 +103,7 @@ const Login = () => {
                   <Label className="text-xs">{isStudent ? 'Full Name' : 'College Name'}</Label>
                   <div className="relative mt-1">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder={isStudent ? 'John Doe' : 'Anna University'} className="pl-10" required />
+                    <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={isStudent ? 'John Doe' : 'Anna University'} className="pl-10" required />
                   </div>
                 </div>
 
@@ -99,7 +147,7 @@ const Login = () => {
               <Label className="text-xs">{isStudent ? 'Email' : 'Official Email'}</Label>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input type="email" placeholder="you@example.com" className="pl-10" required />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
               </div>
             </div>
 
@@ -107,14 +155,30 @@ const Login = () => {
               <Label className="text-xs">Password</Label>
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input type="password" placeholder="••••••••" className="pl-10" required />
+                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10" required minLength={6} />
               </div>
             </div>
 
-            <Button type="submit" className="w-full" size="lg">
-              {isRegister ? 'Create Account' : 'Sign In'}
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading ? 'Please wait...' : isRegister ? 'Create Account' : 'Sign In'}
             </Button>
           </form>
+
+          <div className="my-5 flex items-center gap-3">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">OR</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
+          <Button type="button" variant="outline" className="w-full gap-2" onClick={handleGoogle} disabled={loading}>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A10.99 10.99 0 0 0 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.1V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.93l3.66-2.83z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83C6.71 7.31 9.14 5.38 12 5.38z"/>
+            </svg>
+            Continue with Google
+          </Button>
 
           <div className="mt-6 text-center text-sm">
             <button onClick={() => setIsRegister(!isRegister)} className="text-primary hover:underline">
